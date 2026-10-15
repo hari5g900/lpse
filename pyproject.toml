@@ -24,33 +24,24 @@ dependencies = [
 dev = ["pytest", "ruff"]
 
 [project.scripts]
-lpse-train = "train_lpse:main"
-lpse-train-offline = "train_lpse_offline:main"
-lpse-train-no-future = "train_lpse_no_future:main"
-lpse-infer = "infer_lpse:main"
-lpse-benchmark-llm = "benchmark_llm_forecast:main"
-lpse-baseline-mlp = "train_baseline_mlp:main"
-lpse-baseline-lstm = "train_baseline_lstm:main"
-lpse-baseline-transformer = "train_baseline_transformer:main"
-lpse-baseline-xgb = "train_baseline_xgb:main"
+lpse-train = "lpse.apps.train_lpse:main"
+lpse-train-offline = "lpse.apps.train_lpse_offline:main"
+lpse-train-no-future = "lpse.apps.train_lpse_no_future:main"
+lpse-infer = "lpse.apps.infer_lpse:main"
+lpse-benchmark-llm = "lpse.apps.benchmark_llm_forecast:main"
+lpse-baseline-mlp = "lpse.apps.train_baseline_mlp:main"
+lpse-baseline-lstm = "lpse.apps.train_baseline_lstm:main"
+lpse-baseline-transformer = "lpse.apps.train_baseline_transformer:main"
+lpse-baseline-xgb = "lpse.apps.train_baseline_xgb:main"
 
 [tool.setuptools]
-packages = ["lpse"]
-py-modules = [
-    "infer_lpse",
-    "train_lpse",
-    "train_lpse_offline",
-    "train_lpse_no_future",
-    "benchmark_llm_forecast",
-    "train_baseline_mlp",
-    "train_baseline_lstm",
-    "train_baseline_transformer",
-    "train_baseline_xgb",
-]
+packages = ["lpse", "lpse.apps"]
+
 [tool.ruff]
 target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I", "UP"]
+
 [tool.ruff.lint.per-file-ignores]
-"scripts/benchmark_mc_vote.py" = ["E402"]
+"scripts/eval/benchmark_mc_vote.py" = ["E402"]

@@ -2,9 +2,9 @@
 """Cycle random stress-ng profiles across worker nodes via Kubernetes Jobs to diversify training signal.
 
 Usage:
-  python scripts/stress_randomizer.py            # run continuously
-  python scripts/stress_randomizer.py --once     # one profile, then exit
-  python scripts/stress_randomizer.py --cleanup  # delete all stress jobs
+  python scripts/data/stress_randomizer.py            # run continuously
+  python scripts/data/stress_randomizer.py --once     # one profile, then exit
+  python scripts/data/stress_randomizer.py --cleanup  # delete all stress jobs
 """
 
 import argparse

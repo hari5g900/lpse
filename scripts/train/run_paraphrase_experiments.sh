@@ -19,14 +19,14 @@ run_variant () {
     env "${envs[@]}" LPSE_RUN_SUFFIX="para_${name}" \
         CHECKPOINT_PATH="$ckpt" LOG_CSV_PATH="$csv" \
         SUMMARY_INTERVAL=0 \
-        .venv/bin/python train_lpse_offline.py 2>&1 | tail -5
+        .venv/bin/python -m lpse.apps.train_lpse_offline 2>&1 | tail -5
     echo "===== BENCH $name (clean) ====="
-    env "${envs[@]}" .venv/bin/python scripts/benchmark_offline_trace.py \
+    env "${envs[@]}" .venv/bin/python scripts/eval/benchmark_offline_trace.py \
         --dump "$DUMP" --checkpoint "$ckpt" \
         --snapshots 40 --questions-per-snapshot 5 --max-questions 100 --tail-fraction 0.2 --skip-llm \
         --results-csv "$RESULT_DIR/${name}_clean.csv" --summary-json "$RESULT_DIR/${name}_clean.json" 2>&1 | grep -E "LPSE|MLP|XGB"
     echo "===== BENCH $name (paraphrased) ====="
-    env "${envs[@]}" .venv/bin/python scripts/benchmark_offline_trace.py \
+    env "${envs[@]}" .venv/bin/python scripts/eval/benchmark_offline_trace.py \
         --dump "$DUMP" --checkpoint "$ckpt" \
         --snapshots 40 --questions-per-snapshot 5 --max-questions 100 --tail-fraction 0.2 --skip-llm \
         --paraphrase-questions \

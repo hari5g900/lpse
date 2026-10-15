@@ -21,8 +21,8 @@ from dataclasses import dataclass
 
 import torch
 
-from infer_lpse import load_model
 from lpse import seed_everything
+from lpse.apps.infer_lpse import load_model
 from lpse.collectors import get_node_ips, get_num_cores_from_node_exporter
 from lpse.prometheus_ingest import (
     cluster_snapshot_to_token,

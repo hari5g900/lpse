@@ -16,12 +16,12 @@ import sys
 
 import torch
 
-sys_path_setup = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys_path_setup = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys_path_setup not in sys.path:
     sys.path.insert(0, sys_path_setup)
 
-from benchmark_llm_forecast import _paraphrase_question
-from infer_lpse import load_model
+from lpse.apps.benchmark_llm_forecast import _paraphrase_question
+from lpse.apps.infer_lpse import load_model
 from lpse.question_encoder import encode_questions
 from lpse.replay_dump import iter_dump_by_snapshot
 

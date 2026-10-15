@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 KUBECTL="$(command -v kubectl || true)"; KUBECTL="${KUBECTL:-/tmp/opencode/kubectl}"
 BASE_PORT=39101

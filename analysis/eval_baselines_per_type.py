@@ -29,7 +29,7 @@ import torch
 import torch.nn as nn
 import xgboost as xgb
 
-from infer_lpse import load_model as load_jepa_model
+from lpse.apps.infer_lpse import load_model as load_jepa_model
 from lpse.prometheus_ingest import CLUSTER_TOKEN_DIM
 from lpse.question_encoder import QUESTION_DIM, build_question_encoder, encode_questions
 from lpse.replay_dump import iter_dump_by_snapshot

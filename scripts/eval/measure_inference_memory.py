@@ -20,7 +20,7 @@ import xgboost as xgb
 
 os.environ.setdefault("CHECKPOINT_PATH", "checkpoints/lpsehybrid.pt")
 
-from infer_lpse import load_model
+from lpse.apps.infer_lpse import load_model
 from lpse.prometheus_ingest import CLUSTER_TOKEN_DIM
 from lpse.question_encoder import QUESTION_DIM, build_question_encoder, encode_questions
 

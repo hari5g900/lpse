@@ -2,7 +2,7 @@
 set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/.." || exit 1
+cd "$SCRIPT_DIR/../.." || exit 1
 DUMP=artifacts/dumps/jepa_run
 CKPT_BASE=artifacts/checkpoints/lpse_lap_eps15_10epck.pt
 RES=artifacts/results/final
@@ -27,11 +27,11 @@ while true; do
         s2=$(stat -c %s "$f" 2>/dev/null || echo 0)
         [ "$s1" = "$s2" ] || continue
         echo "[$(date)] evaluating $base"
-        .venv/bin/python scripts/benchmark_offline_trace.py \
+        .venv/bin/python scripts/eval/benchmark_offline_trace.py \
             --dump "$DUMP" --checkpoint "$f" \
             --snapshots 160 --questions-per-snapshot 5 --max-questions 800 --tail-fraction 0.2 --skip-llm \
             --results-csv "$RES/${base}_clean.csv" --summary-json "$RES/${base}_clean.json" 2>&1 | grep -E "^LPSE"
-        .venv/bin/python scripts/benchmark_offline_trace.py \
+        .venv/bin/python scripts/eval/benchmark_offline_trace.py \
             --dump "$DUMP" --checkpoint "$f" \
             --snapshots 160 --questions-per-snapshot 5 --max-questions 800 --tail-fraction 0.2 --skip-llm \
             --paraphrase-questions \

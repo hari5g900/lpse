@@ -36,7 +36,7 @@ import torch
 import torch.nn as nn
 import xgboost as xgb
 
-from infer_lpse import load_model
+from lpse.apps.infer_lpse import load_model
 from lpse.collectors import get_node_ips, get_num_cores_from_node_exporter
 from lpse.prometheus_ingest import (
     CLUSTER_TOKEN_DIM,

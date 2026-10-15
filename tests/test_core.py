@@ -256,7 +256,7 @@ def test_replay_buffer_len_never_negative_after_eviction():
 
 
 def _import_benchmark():
-    import benchmark_llm_forecast as b
+    from lpse.apps import benchmark_llm_forecast as b
 
     return b
 

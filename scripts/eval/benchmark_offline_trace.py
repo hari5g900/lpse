@@ -12,7 +12,7 @@ cluster scraping, removing the normalizer/telemetry drift that depresses
 live numbers months after training.
 
 Usage:
-  python scripts/benchmark_offline_trace.py \
+  python scripts/eval/benchmark_offline_trace.py \
       --dump artifacts/dumps/jepa_run \
       --checkpoint checkpoints/nljepahybrid.pt \
       --mlp-checkpoint checkpoints/baseline_mlp_v2.pt \
@@ -41,9 +41,9 @@ import requests
 import torch
 import xgboost as xgb
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from benchmark_llm_forecast import (
+from lpse.apps.benchmark_llm_forecast import (
     AccuracyStats,
     _build_llm_messages,
     _category_option_indices,
@@ -52,7 +52,7 @@ from benchmark_llm_forecast import (
     _paraphrase_question,
     _parse_llm_answer_index,
 )
-from infer_lpse import load_model
+from lpse.apps.infer_lpse import load_model
 from lpse.qa_generator import ANSWER_TEMPLATES, NUM_ANSWERS
 from lpse.question_encoder import QUESTION_DIM, encode_question_tokens, encode_questions
 from lpse.replay_dump import iter_dump_by_snapshot

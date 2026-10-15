@@ -14,7 +14,7 @@ Fixes found in jepa_v2 that poisoned the naive merge:
      snapshots from all dumps in global chronological (timestamp) order.
 
 Usage:
-  python scripts/merge_dumps_clean.py \
+  python scripts/data/merge_dumps_clean.py \
       --ref artifacts/dumps/jepa_run \
       --out artifacts/dumps/jepa_merged_clean \
       artifacts/dumps/jepa_run artifacts/dumps/jepa_v2
@@ -29,7 +29,7 @@ import sys
 
 import torch
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"

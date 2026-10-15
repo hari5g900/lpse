@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 CKPT="checkpoints/nljepahybrid.pt"
 RES="artifacts/results"
@@ -23,7 +23,7 @@ run_cond() {
   local model=$1 cond=$2 mode=$3; shift 3
   local base="${RES}/${model}_${cond}_${mode}"
   echo "== $model/$cond/$mode =="
-  if python benchmark_llm_forecast.py \
+  if python -m lpse.apps.benchmark_llm_forecast \
     "${COMMON[@]}" \
     --llm-options "$mode" \
     --results-csv "${base}.csv" \

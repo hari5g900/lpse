@@ -46,7 +46,7 @@ import path.
 
 ## Cluster access
 
-The live trainers and `infer_lpse.py` use the Kubernetes Python client. Point
+The live trainers and `lpse/apps/infer_lpse.py` use the Kubernetes Python client. Point
 it at your cluster:
 
 ```bash
@@ -64,7 +64,7 @@ All entry points run from the repository root.
 dump by default (set `DUMP_DIR=""` to disable):
 
 ```bash
-Q_ENCODER_BACKEND=hybrid LPSE_RUN_SUFFIX=hybrid python train_lpse.py
+Q_ENCODER_BACKEND=hybrid LPSE_RUN_SUFFIX=hybrid python -m lpse.apps.train_lpse
 ```
 
 Writes `artifacts/checkpoints/lpsehybrid.pt`,
@@ -77,17 +77,17 @@ flush via `atexit` on SIGTERM / Ctrl+C.
 
 ```bash
 LOAD_REPLAY_PATH=artifacts/dumps/jepa_live_lap Q_ENCODER_BACKEND=hybrid \
-OFFLINE_EPOCHS=10 python train_baseline_mlp.py
+OFFLINE_EPOCHS=10 python -m lpse.apps.train_baseline_mlp
 
 LOAD_REPLAY_PATH=artifacts/dumps/jepa_live_lap Q_ENCODER_BACKEND=hybrid \
 XGB_DEVICE=cuda OFFLINE_NUM_ROUNDS=500 OFFLINE_EVAL_EVERY=10 \
-python train_baseline_xgb.py
+python -m lpse.apps.train_baseline_xgb
 ```
 
-Also available: `train_baseline_lstm.py` and
-`train_baseline_transformer.py` (temporal baselines over the full 16-step
-window, same env vars as the MLP baseline), `train_lpse_offline.py`
-(trains LPSE itself from a replay dump), and `train_lpse_no_future.py`
+Also available: `lpse/apps/train_baseline_lstm.py` and
+`lpse/apps/train_baseline_transformer.py` (temporal baselines over the full 16-step
+window, same env vars as the MLP baseline), `lpse/apps/train_lpse_offline.py`
+(trains LPSE itself from a replay dump), and `lpse/apps/train_lpse_no_future.py`
 (single-variable ablation with `JEPA_SSL_WEIGHT=0`).
 
 All trainers emit the same CSV schema:
@@ -102,8 +102,8 @@ python analysis/analyze_training_metrics.py artifacts/logs/lpse_training_loghybr
 | --- | --- | --- | --- |
 | `Q_ENCODER_BACKEND` | `sentence_transformer` | all trainers | `keyword`, `sentence_transformer`, or `hybrid`; use the same value for LPSE and its baselines |
 | `KUBECONFIG_PATH` | `./config` | live trainers, inference | kubeconfig file |
-| `DUMP_DIR` | `artifacts/dumps/jepa_live_lap` | `train_lpse.py` | Replay dump output directory; set to `""` to disable dumping |
-| `DUMP_SHARD_SIZE` | 100 | `train_lpse.py` | Snapshots per shard |
+| `DUMP_DIR` | `artifacts/dumps/jepa_live_lap` | `lpse/apps/train_lpse.py` | Replay dump output directory; set to `""` to disable dumping |
+| `DUMP_SHARD_SIZE` | 100 | `lpse/apps/train_lpse.py` | Snapshots per shard |
 | `LOAD_REPLAY_PATH` | (unset) | offline trainers | Replay a dump instead of scraping live |
 | `OFFLINE_EPOCHS` | 10 | MLP/LSTM/Transformer baselines | Passes over the dump |
 | `OFFLINE_NUM_ROUNDS` | 500 | XGBoost baseline | Boosting rounds total |
@@ -126,9 +126,9 @@ concurrently on this card.
 ## Inference
 
 ```bash
-CHECKPOINT_PATH=artifacts/checkpoints/lpsehybrid.pt python infer_lpse.py              # REPL
-python infer_lpse.py --query "Is any node CPU-bound?"                                 # one-shot
-python infer_lpse.py --serve --port 8080                                              # HTTP
+CHECKPOINT_PATH=artifacts/checkpoints/lpsehybrid.pt python -m lpse.apps.infer_lpse              # REPL
+python -m lpse.apps.infer_lpse --query "Is any node CPU-bound?"                                 # one-shot
+python -m lpse.apps.infer_lpse --serve --port 8080                                              # HTTP
 ```
 
 The inference loader reads `q_encoder_backend` from the checkpoint metadata,
@@ -141,7 +141,7 @@ same replay trace, so all systems see the identical (normalized) context
 distribution they were trained on:
 
 ```bash
-python scripts/benchmark_offline_trace.py \
+python scripts/eval/benchmark_offline_trace.py \
     --dump artifacts/dumps/jepa_live_lap \
     --checkpoint artifacts/checkpoints/lpsehybrid.pt \
     --snapshots 30 --questions-per-snapshot 5 --max-questions 100 \
@@ -153,10 +153,10 @@ Pass `--mlp-checkpoint` / `--xgb-model` (plus `--xgb-norm`,
 `--xgb-encoder-state`) to include the baselines, and
 `--paraphrase-questions` for the paraphrase condition.
 
-**Live LLM benchmark** — `benchmark_llm_forecast.py` compares LPSE against a
+**Live LLM benchmark** — `lpse/apps/benchmark_llm_forecast.py` compares LPSE against a
 vLLM endpoint on a live QA stream. The endpoint is configured via env vars
 (`VLLM_CHAT_URL` or `VLLM_BASE_URL`, `VLLM_MODEL`, `VLLM_API_KEY`) or the
-equivalent `--vllm-*` flags. `scripts/run_llm_benchmark_matrix.sh` runs the
+equivalent `--vllm-*` flags. `scripts/eval/run_llm_benchmark_matrix.sh` runs the
 full condition matrix (clean / drop-node / paraphrased, open and category
 answer modes) against the endpoints configured in that script; it needs
 trained checkpoints, a kubeconfig, and a running cluster.
@@ -175,16 +175,20 @@ From the camera-ready evaluation, against a deployable 4B LLM endpoint:
 
 ```
 lpse/                Library: model, encoders, ingestion, replay
-train_lpse.py        LPSE trainer (live scrape + JEPA SSL + QA losses)
-train_lpse_offline.py        LPSE trainer on a replay dump
-train_lpse_no_future.py      LPSE ablation (future objective removed)
-train_baseline_mlp.py        MLP baseline (live or offline replay)
-train_baseline_lstm.py       LSTM temporal baseline
-train_baseline_transformer.py Transformer temporal baseline
-train_baseline_xgb.py        XGBoost baseline (live or offline replay)
-infer_lpse.py        Inference: CLI REPL, --query, or HTTP server
-benchmark_llm_forecast.py    LPSE-vs-LLM live benchmark
-scripts/             One-shot utilities (benchmarks, data cleaning, stress, experiment launchers)
+lpse/apps/           Entry-point applications:
+  train_lpse.py        LPSE trainer (live scrape + JEPA SSL + QA losses)
+  train_lpse_offline.py        LPSE trainer on a replay dump
+  train_lpse_no_future.py      LPSE ablation (future objective removed)
+  train_baseline_mlp.py        MLP baseline (live or offline replay)
+  train_baseline_lstm.py       LSTM temporal baseline
+  train_baseline_transformer.py Transformer temporal baseline
+  train_baseline_xgb.py        XGBoost baseline (live or offline replay)
+  infer_lpse.py        Inference: CLI REPL, --query, or HTTP server
+  benchmark_llm_forecast.py    LPSE-vs-LLM live benchmark
+scripts/train/       Experiment launchers and training watchers
+scripts/eval/        Benchmark, accuracy, and memory utilities
+scripts/data/        Dump cleaning and cluster stress tooling
+scripts/infra/       Cluster infrastructure helpers
 analysis/            Plot and ablation/per-type analysis scripts
 tests/               Unit tests and live-cluster check scripts
 deploy/              Cluster manifests

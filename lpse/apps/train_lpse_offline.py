@@ -11,7 +11,7 @@ to live training; only the accumulation source differs.
 
 Usage:
   LOAD_REPLAY_PATH=artifacts/dumps/jepa_run Q_ENCODER_BACKEND=hybrid \
-      python train_lpse_offline.py
+      python -m lpse.apps.train_lpse_offline
 """
 
 import csv

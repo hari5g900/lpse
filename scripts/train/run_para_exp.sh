@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/.." || exit 1
+cd "$SCRIPT_DIR/../.." || exit 1
 
 ROUND="${1:-}"
 case "$ROUND" in
@@ -27,15 +27,15 @@ run_variant () {
     env "${envs[@]}" LPSE_RUN_SUFFIX="para${ROUND}_${name}" \
         CHECKPOINT_PATH="$ckpt" LOG_CSV_PATH="$csv" \
         SUMMARY_INTERVAL=0 \
-        .venv/bin/python train_lpse_offline.py > "$LOG_DIR/${name}_train.log" 2>&1
+        .venv/bin/python -m lpse.apps.train_lpse_offline > "$LOG_DIR/${name}_train.log" 2>&1
     tail -1 "$LOG_DIR/${name}_train.log"
     echo "===== BENCH $name (clean) ====="
-    env "${envs[@]}" .venv/bin/python scripts/benchmark_offline_trace.py \
+    env "${envs[@]}" .venv/bin/python scripts/eval/benchmark_offline_trace.py \
         --dump "$DUMP" --checkpoint "$ckpt" \
         --snapshots 40 --questions-per-snapshot 5 --max-questions 100 --tail-fraction 0.2 --skip-llm \
         --results-csv "$RESULT_DIR/${name}_clean.csv" --summary-json "$RESULT_DIR/${name}_clean.json" 2>&1 | grep -E "^LPSE"
     echo "===== BENCH $name (paraphrased) ====="
-    env "${envs[@]}" .venv/bin/python scripts/benchmark_offline_trace.py \
+    env "${envs[@]}" .venv/bin/python scripts/eval/benchmark_offline_trace.py \
         --dump "$DUMP" --checkpoint "$ckpt" \
         --snapshots 40 --questions-per-snapshot 5 --max-questions 100 --tail-fraction 0.2 --skip-llm \
         --paraphrase-questions \
