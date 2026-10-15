@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: node-stress
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-stress
+  namespace: node-stress
+  labels:
+    app: node-stress
+spec:
+  selector:
+    matchLabels:
+      app: node-stress
+  template:
+    metadata:
+      labels:
+        app: node-stress
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: dedicated
+                    operator: In
+                    values: ["worker"]
+      tolerations:
+        - operator: Exists
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: stress
+          image: ghcr.io/colinianking/stress-ng:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CPU_LOAD_PCT
+              value: "50"
+            - name: MEM_BYTES
+              value: "256M"
+            - name: VM_WORKERS
+              value: "1"
+          command: ["/bin/sh", "-lc"]
+          args:
+            - |
+              set -euo pipefail
+              CORES="$(nproc)"
+              CPU_WORKERS="$CORES"
+              echo "node-stress starting: cores=$CORES cpu_workers=$CPU_WORKERS cpu_load=${CPU_LOAD_PCT}% vm_workers=${VM_WORKERS} vm_bytes=${MEM_BYTES}"
+              exec stress-ng \
+                --cpu "$CPU_WORKERS" \
+                --cpu-load "${CPU_LOAD_PCT}" \
+                --vm "${VM_WORKERS}" \
+                --vm-bytes "${MEM_BYTES}" \
+                --vm-keep \
+                --metrics-brief \
+                --timeout 0
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
