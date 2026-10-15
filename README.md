@@ -229,7 +229,7 @@ If you use LPSE, please cite:
                Learning for Dynamic Network Monitoring and Orchestration},
   booktitle = {IEEE GLOBECOM},
   year      = {2026},
-  note      = {Under review}
+  note      = {To appear}
 }
 ```
 
