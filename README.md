@@ -171,6 +171,18 @@ From the camera-ready evaluation, against a deployable 4B LLM endpoint:
 | Mean inference latency | ~41× lower |
 | Memory footprint | 15× smaller |
 
+## Model weights
+
+Trained checkpoints are hosted on Hugging Face:
+[https://huggingface.co/hari5g900/lpse](https://huggingface.co/hari5g900/lpse).
+
+| File | Contents |
+| --- | --- |
+| `lpsehybrid.pt` | Full LPSE checkpoint for the canonical merged-dataset run |
+| `baseline_mlp_v2.pt` | MLP baseline checkpoint |
+| `baseline_xgb_v2.json` (+ `_encoder.pt`, `_norm.pkl`) | XGBoost baseline |
+
+Point inference at a checkpoint with `CHECKPOINT_PATH=/path/to/lpsehybrid.pt`.
 ## Repository layout
 
 ```
